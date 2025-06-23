@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ReliablyME</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      width: 300px;
+      margin: 0;
+      padding: 10px;
+    }
+    input, button {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .message {
+      border-bottom: 1px solid #ccc;
+      padding: 6px 0;
+    }
+    .timestamp {
+      color: gray;
+      font-size: 0.8em;
+    }
+  </style>
+</head>
+<body>
+  <div id="status">Checking login...</div>
+
+  <!-- Step 1: Enter Mobile -->
+  <div id="step1">
+    <input id="mobileInput" type="text" placeholder="Enter Canadian mobile number" />
+    <button id="sendOtpBtn">Send OTP</button>
+  </div>
+
+  <!-- Step 2: Enter OTP -->
+  <div id="step2" style="display:none;">
+    <input id="otpInput" type="text" placeholder="Enter OTP code" />
+    <button id="verifyOtpBtn">Log In</button>
+  </div>
+
+  <!-- Messages -->
+  <div id="messagesSection" style="display:none;">
+    <div id="messages"></div>
+    <button id="refreshBtn">Refresh</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

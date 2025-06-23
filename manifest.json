@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "ReliablyME Notifications",
+  "description": "Receive ReliablyME notifications in Chrome.",
+  "version": "1.0",
+  "permissions": [
+    "storage",
+    "notifications",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://controllermain.reliably.me/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://app.reliably.me/*"],
+      "js": ["contentScript.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ReliablyME Notifications"
+  },
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icon48.png", "icon128.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
