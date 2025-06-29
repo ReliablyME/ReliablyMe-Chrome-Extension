@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/v1.0/verifyOTP`, {
+      const res = await fetch(`${API_BASE}/api/v2.0/verifyOTP`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -74,14 +74,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       const data = await res.json();
+      console.log("VERIFY OTP RAW RESPONSE:", data);
       chrome.runtime.sendMessage({ type: 'LOG', payload: { event: 'verifyOTP response', data } });
 
-      if ((data.success || data.status === 'success') && data.results) {
-        const { token, _id } = data.results;
+      if ((data.success || data.status === 'success')) {
+        const token = data.token;
+        const _id = data._id || data.userid || '';
+
+        if (!token) {
+          alert("Server did not return a token.");
+          return;
+        }
+
+        // handle no _id properrly
         await chrome.storage.local.set({ auth: { token, mobile: tempMobile, userid: _id } });
+        localStorage.setItem('verify_otp', token);
+        localStorage.setItem('_id', _id);
+        localStorage.setItem('mobile', tempMobile);
+
         status.textContent = `Logged in as ${tempMobile}`;
         showMessages();
       } else {
+        console.error("OTP verification failed:", data);
         alert("Invalid OTP. " + (data.message || "No token returned."));
       }
     } catch (e) {

@@ -1,6 +1,6 @@
 (function() {
   try {
-    const token = localStorage.getItem('veriry_otp');
+    const token = localStorage.getItem('verify_otp');
     const userid = localStorage.getItem('_id');
     const mobile = localStorage.getItem('mobile');
     if (token && userid && mobile) {
