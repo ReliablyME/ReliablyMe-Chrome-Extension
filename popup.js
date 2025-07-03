@@ -6,11 +6,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const step2 = document.getElementById('step2');
   const messagesSection = document.getElementById('messagesSection');
 
+  const countryCodeInput = document.getElementById('countryCode');
   const mobileInput = document.getElementById('mobileInput');
   const otpInput = document.getElementById('otpInput');
   const sendOtpBtn = document.getElementById('sendOtpBtn');
   const verifyOtpBtn = document.getElementById('verifyOtpBtn');
   const refreshBtn = document.getElementById('refreshBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
   const messagesContainer = document.getElementById('messages');
 
   let tempMobile = '';
@@ -23,11 +25,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   sendOtpBtn.addEventListener('click', async () => {
-    const raw = mobileInput.value.trim();
-    const mobile = raw.startsWith('+') ? raw : `+1${raw}`;
+    const code = countryCodeInput.value;
+    const number = mobileInput.value.trim().replace(/\D/g, '');
+    const mobile = `${code}${number}`;
 
-    if (!/^\+1\d{10}$/.test(mobile)) {
-      alert("Please enter a valid Canadian mobile number.");
+    if (!/^\+\d{10,15}$/.test(mobile)) {
+      alert("Please enter a valid phone number.");
       return;
     }
 
@@ -74,7 +77,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       const data = await res.json();
-      console.log("VERIFY OTP RAW RESPONSE:", data);
       chrome.runtime.sendMessage({ type: 'LOG', payload: { event: 'verifyOTP response', data } });
 
       if ((data.success || data.status === 'success')) {
@@ -86,7 +88,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           return;
         }
 
-        // handle no _id properrly
         await chrome.storage.local.set({ auth: { token, mobile: tempMobile, userid: _id } });
         localStorage.setItem('verify_otp', token);
         localStorage.setItem('_id', _id);
@@ -95,7 +96,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         status.textContent = `Logged in as ${tempMobile}`;
         showMessages();
       } else {
-        console.error("OTP verification failed:", data);
         alert("Invalid OTP. " + (data.message || "No token returned."));
       }
     } catch (e) {
@@ -150,6 +150,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   refreshBtn.addEventListener('click', async () => {
     const store = await chrome.storage.local.get(['auth']);
     if (store.auth?.mobile) loadMessages(store.auth.mobile);
+  });
+
+  logoutBtn?.addEventListener('click', async () => {
+    await chrome.storage.local.remove('auth');
+    localStorage.clear();
+    status.textContent = 'Logged out.';
+    showStep(1);
   });
 
   const store = await chrome.storage.local.get(['auth']);
